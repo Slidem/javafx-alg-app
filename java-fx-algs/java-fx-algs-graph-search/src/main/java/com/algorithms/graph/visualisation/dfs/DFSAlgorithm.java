@@ -1,21 +1,23 @@
 package com.algorithms.graph.visualisation.dfs;
 
 
+import ami.lightdi.annotations.Component;
+import ami.lightdi.annotations.Inject;
 import com.algorithms.commmons.AbstractAlgorithm;
 import com.algorithms.commmons.AlgorithmType;
 import com.algorithms.graph.logic.dfs.DFSSearch;
 import com.algorithms.graph.visualisation.GraphSearchAlgorithmTypes;
-import com.algorithms.graph.visualisation.canvas.GraphCanvas;
-import com.algorithms.graph.visualisation.nodes.GraphAlgorithmVisNode;
-import com.algorithms.graph.visualisation.toolbars.GraphToolbar;
+import com.algorithms.graph.visualisation.factory.GraphSearchAlgorithmFactory;
 
 /**
  * @author slidem
  */
+@Component
 public class DFSAlgorithm extends AbstractAlgorithm {
 
-    public DFSAlgorithm() {
-        super(new GraphAlgorithmVisNode(new GraphToolbar(), new GraphCanvas(), DFSSearch::new));
+    @Inject
+    public DFSAlgorithm(GraphSearchAlgorithmFactory graphSearchAlgorithmFactory) {
+        super(graphSearchAlgorithmFactory.create(DFSSearch::new));
     }
 
 
@@ -25,7 +27,7 @@ public class DFSAlgorithm extends AbstractAlgorithm {
     }
 
     @Override
-    public void showDecriptionNode() {
+    public void showDescriptionNode() {
         algorithmDisplay.display(null);
     }
 

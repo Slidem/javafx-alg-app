@@ -1,5 +1,6 @@
 package com.algorithms.app.factory.impl;
 
+import ami.lightdi.annotations.Component;
 import com.algorithms.app.factory.AlgorithmNodeFactory;
 import com.algorithms.commmons.Algorithm;
 import javafx.collections.FXCollections;
@@ -19,9 +20,8 @@ import static com.algorithms.utils.ImageUtils.getImage;
 /**
  * @author slidem
  */
-public enum AlgorithmNodeFactoryImpl implements AlgorithmNodeFactory {
-
-    INSTANCE;
+@Component
+public class AlgorithmNodeFactoryImpl implements AlgorithmNodeFactory {
 
     private static final int PANE_HEIGHT = 70;
 
@@ -88,7 +88,7 @@ public enum AlgorithmNodeFactoryImpl implements AlgorithmNodeFactory {
         return mouseEvent -> {
             String selectedItem = listView.getSelectionModel().getSelectedItem();
             if (DESCRIPTION.equals(selectedItem)) {
-                algorithm.showDecriptionNode();
+                algorithm.showDescriptionNode();
             }
             if (VISUALISATION.equals(selectedItem)) {
                 algorithm.showVisualizationNode();

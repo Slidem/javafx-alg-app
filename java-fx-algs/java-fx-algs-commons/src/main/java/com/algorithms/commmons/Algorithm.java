@@ -10,7 +10,7 @@ public interface Algorithm {
 
     AlgorithmType getType();
 
-    void showDecriptionNode();
+    void showDescriptionNode();
 
     void showVisualizationNode();
 

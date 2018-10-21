@@ -1,21 +1,23 @@
 package com.algorithms.graph.visualisation.bfs;
 
 
+import ami.lightdi.annotations.Component;
+import ami.lightdi.annotations.Inject;
 import com.algorithms.commmons.AbstractAlgorithm;
 import com.algorithms.commmons.AlgorithmType;
 import com.algorithms.graph.logic.bfs.BFSSearch;
 import com.algorithms.graph.visualisation.GraphSearchAlgorithmTypes;
-import com.algorithms.graph.visualisation.canvas.GraphCanvas;
-import com.algorithms.graph.visualisation.nodes.GraphAlgorithmVisNode;
-import com.algorithms.graph.visualisation.toolbars.GraphToolbar;
+import com.algorithms.graph.visualisation.factory.GraphSearchAlgorithmFactory;
 
 /**
  * @author slidem
  */
+@Component
 public class BFSAlgorithm extends AbstractAlgorithm {
 
-    public BFSAlgorithm() {
-        super(new GraphAlgorithmVisNode(new GraphToolbar(), new GraphCanvas(), BFSSearch::new));
+    @Inject
+    public BFSAlgorithm(GraphSearchAlgorithmFactory graphSearchAlgorithmFactory) {
+        super(graphSearchAlgorithmFactory.create(BFSSearch::new));
     }
 
     @Override
@@ -24,7 +26,7 @@ public class BFSAlgorithm extends AbstractAlgorithm {
     }
 
     @Override
-    public void showDecriptionNode() {
+    public void showDescriptionNode() {
         algorithmDisplay.display(null);
     }
 }
