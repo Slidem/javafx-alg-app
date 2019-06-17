@@ -20,6 +20,7 @@ public class ConnectToState extends AbstractGraphState {
         context.getToolbar().enableAllControls();
         context.getToolbar().getInformationBar().resetToDefault();
         from.addConnection(canvasNode);
+        from.getValue().addNeighbour(canvasNode.getValue());
         from.reset();
         canvasNode.reset();
         context.changeState(new DefaultState());

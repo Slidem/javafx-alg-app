@@ -5,6 +5,7 @@ import com.algorithms.graphics.canvas.nodes.CanvasNode;
 import com.algorithms.strings.visualisation.context.MatrixRotationContext;
 import com.algorithms.strings.visualisation.objects.RowColumnHolder;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.Point2D;
 
 /**
  * @author Mihai Alexandru
@@ -13,7 +14,7 @@ import com.algorithms.utils.geometry.Point;
 public abstract class MatrixAbstractState implements AlgorithmState<RowColumnHolder, MatrixRotationContext> {
 
     @Override
-    public final void canvasClicked(Point point, MatrixRotationContext context) {
+    public final void canvasClicked(Point2D point, MatrixRotationContext context) {
         //-> nothing to do there
     }
 

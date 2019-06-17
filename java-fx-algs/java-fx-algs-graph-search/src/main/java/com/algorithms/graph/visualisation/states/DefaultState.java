@@ -52,7 +52,7 @@ public class DefaultState extends AbstractGraphState {
         if (nodes < 2) {
             displayAttentionMessage("At least two nodes should be available in order to perform a connection", context);
         } else {
-            changeInfo("Click on a node to delete it", context);
+            changeInfo("Click on a node you wish to start a connection from", context);
             context.getToolbar().disableAllExcept(ButtonType.CONNECT.name());
             context.changeState(new ConnectState());
         }

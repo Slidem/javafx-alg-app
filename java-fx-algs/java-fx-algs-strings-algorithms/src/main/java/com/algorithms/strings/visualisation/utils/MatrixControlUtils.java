@@ -3,6 +3,7 @@ package com.algorithms.strings.visualisation.utils;
 import com.algorithms.graphics.toolbar.Toolbar;
 import com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 
 import static com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes.*;
 
@@ -24,6 +25,14 @@ public class MatrixControlUtils {
         getControl(ROTATE_MATRIX_BUTTON, toolbar).setDisable(disabled);
     }
 
+    public static void changeClearToStop(Toolbar toolbar){
+        setClearButtonText(toolbar, "Stop");
+    }
+
+    public static void changeStopToClear(Toolbar toolbar){
+        setClearButtonText(toolbar, "Clear");
+    }
+
     public static void disableClearMatrix(Toolbar toolbar, boolean disabled) {
         getControl(CLEAR_BUTTON, toolbar).setDisable(disabled);
     }
@@ -34,5 +43,9 @@ public class MatrixControlUtils {
 
     private static Node getControl(MatrixRotationControlTypes controlType, Toolbar toolbar) {
         return toolbar.getControl(controlType.name()).getControl();
+    }
+
+    private static void setClearButtonText(Toolbar toolbar, String stop) {
+        toolbar.getControl(MatrixRotationControlTypes.CLEAR_BUTTON.name()).getControlAs(Button.class).setText(stop);
     }
 }

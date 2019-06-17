@@ -1,8 +1,12 @@
 package com.algorithms.graphics.canvas.nodes;
 
 import com.algorithms.graphics.canvas.Canvas;
+import com.algorithms.graphics.canvas.nodes.connections.LineConnectionHelper;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -11,6 +15,7 @@ import javafx.scene.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Mihai Alexandru
@@ -28,13 +33,17 @@ public class CanvasNode<T> {
 
     private Canvas<T> canvas;
 
-    private Point point;
+    private Point2D point;
 
     private Color nodeDefaultColor;
 
     private StackPane shapeAndTextPane;
 
+    private LineConnectionHelper lineConnectionHelper;
+
     private Map<String, Line> connections;
+
+    private boolean allowIntersections;
 
     CanvasNode(CanvasNodeBuilder<T> builder) {
         this.value = builder.value;
@@ -45,11 +54,13 @@ public class CanvasNode<T> {
         this.canvas = builder.canvas;
         this.text = new Text(builder.text);
         this.connections = new HashMap<>();
+        this.lineConnectionHelper = builder.lineConnectionHelper;
+        this.allowIntersections = builder.allowIntersections;
         setupShape();
     }
 
     public boolean draw() {
-        if (intersectsOtherShapes()) {
+        if (intersectsOtherShapes() && !allowIntersections) {
             return false;
         }
         canvas.getChildren().add(shapeAndTextPane);
@@ -81,11 +92,18 @@ public class CanvasNode<T> {
     }
 
     public void addConnection(CanvasNode<T> node) {
+        if (connections.containsKey(node.id)) {
+            return;
+        }
         Line connectionLine = createLine(this, node);
-        this.connections.put(node.getId(), connectionLine);
-        node.connections.put(this.getId(), connectionLine);
+        this.connections.put(node.id, connectionLine);
+        node.connections.put(this.id, connectionLine);
         canvas.getChildren().add(connectionLine);
         connectionLine.toBack();
+    }
+
+    public boolean contains(Point2D point2D) {
+        return shapeAndTextPane.getBoundsInParent().contains(point2D);
     }
 
     // ------------- getters ----------------------------
@@ -98,7 +116,7 @@ public class CanvasNode<T> {
         return shape;
     }
 
-    public Point getPoint() {
+    public Point2D getPoint() {
         return point;
     }
 
@@ -120,7 +138,7 @@ public class CanvasNode<T> {
             sp.getScene().setCursor(Cursor.HAND);
         });
 
-        this.shapeAndTextPane.setOnMouseDragExited(mouseEvent -> {
+        this.shapeAndTextPane.setOnMouseExited(mouseEvent -> {
             StackPane sp = (StackPane) mouseEvent.getSource();
             sp.getScene().setCursor(Cursor.DEFAULT);
         });
@@ -128,14 +146,20 @@ public class CanvasNode<T> {
 
     private Line createLine(CanvasNode<T> connectFrom, CanvasNode<T> connectTo) {
         Line line = new Line();
-        line.setStartX(connectFrom.getPoint().getX());
-        line.setStartY(connectFrom.getPoint().getY());
-        line.setEndX(connectTo.getPoint().getX());
-        line.setEndY(connectTo.getPoint().getY());
+        Point2D start = connectFrom.getPoint();
+        Point2D end = connectTo.getPoint();
+        if (Objects.nonNull(lineConnectionHelper)) {
+            start = lineConnectionHelper.adjustStartingPoint(start);
+            end = lineConnectionHelper.adjustEndPoint(end);
+        }
+        line.setStartX(start.getX());
+        line.setStartY(start.getY());
+        line.setEndX(end.getX());
+        line.setEndY(end.getY());
         return line;
     }
 
     private boolean intersectsOtherShapes() {
-        return canvas.getAllNodes().stream().anyMatch(n -> n.getShape().intersects(this.getShape().getBoundsInParent()));
+        return canvas.getAllNodes().stream().anyMatch(n -> n.shapeAndTextPane.getBoundsInParent().intersects(this.shapeAndTextPane.getBoundsInParent()));
     }
 }

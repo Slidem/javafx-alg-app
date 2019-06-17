@@ -52,7 +52,6 @@ public class RotateMatrix {
             start++;
             end--;
         }
-        observer.rotationFinished();
         return matrix;
     }
 

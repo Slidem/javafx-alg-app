@@ -44,6 +44,12 @@ public class Node<T> {
         return connection.connect(this, neighbour);
     }
 
+    public void removeFromAllNeighbours(){
+        for (Node<T> neighbour : neighbours) {
+            neighbour.neighbours.remove(this);
+        }
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -5,9 +5,13 @@ import com.algorithms.graphics.toolbar.Toolbar;
 import com.algorithms.graphics.toolbar.control.ToolbarControl;
 import com.algorithms.strings.visualisation.context.MatrixRotationContext;
 import com.algorithms.strings.visualisation.factory.MatrixDrawer;
+import com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes;
 import com.algorithms.strings.visualisation.utils.MatrixControlUtils;
 import javafx.scene.control.ComboBox;
 
+import java.util.Objects;
+
+import static com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes.GENERATE_MATRIX_BUTTON;
 import static com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes.MATRIX_SIZE_COMBO;
 import static com.algorithms.strings.visualisation.utils.MatrixControlUtils.getControlAs;
 
@@ -25,6 +29,10 @@ public class GenerateMatrixState extends MatrixAbstractState {
 
     @Override
     public void controlClicked(ToolbarControl control, MatrixRotationContext context) {
+        if(!Objects.equals(control.getType(), GENERATE_MATRIX_BUTTON.name())){
+            return;
+        }
+
         Toolbar toolbar = context.getToolbar();
 
         ComboBox<Integer> matrixSizeCombo = getControlAs(MATRIX_SIZE_COMBO, toolbar, ComboBox.class);

@@ -6,6 +6,7 @@ import com.algorithms.graphics.canvas.nodes.CanvasNodeBuilder;
 import com.algorithms.graphics.canvas.nodes.CanvasNodeFactory;
 import com.algorithms.lists.node.Node;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
@@ -20,16 +21,12 @@ public class ListNodeFactory implements CanvasNodeFactory<Node<String>> {
 
     private Node<String> node;
 
-    private ListNodeFactory(Node<String> node) {
+    public ListNodeFactory(Node<String> node) {
         this.node = node;
     }
 
-    public static ListNodeFactory of(Node<String> node) {
-        return new ListNodeFactory(node);
-    }
-
     @Override
-    public CanvasNode<Node<String>> createNode(Canvas<Node<String>> canvas, Point point) {
+    public CanvasNode<Node<String>> createNode(Canvas<Node<String>> canvas, Point2D point) {
         Shape listShape = new Rectangle(DEFAULT_SQUARE_SIDE, DEFAULT_SQUARE_SIDE);
         return new CanvasNodeBuilder<Node<String>>()
                 .withValue(node)

@@ -7,6 +7,7 @@ import com.algorithms.graphics.AlgorithmState;
 import com.algorithms.graphics.canvas.nodes.CanvasNode;
 import com.algorithms.graphics.toolbar.control.ToolbarControl;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.Point2D;
 
 /**
  * @author slidem
@@ -19,7 +20,7 @@ public abstract class AbstractGraphState implements AlgorithmState<Node<String>,
     }
 
     @Override
-    public void canvasClicked(Point point, GraphSearchAlgorithmContext context) {
+    public void canvasClicked(Point2D point, GraphSearchAlgorithmContext context) {
         //do nothing
     }
 

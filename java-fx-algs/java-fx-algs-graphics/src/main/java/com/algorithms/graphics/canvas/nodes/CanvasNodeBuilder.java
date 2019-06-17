@@ -1,7 +1,8 @@
 package com.algorithms.graphics.canvas.nodes;
 
 import com.algorithms.graphics.canvas.Canvas;
-import com.algorithms.utils.geometry.Point;
+import com.algorithms.graphics.canvas.nodes.connections.LineConnectionHelper;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
@@ -21,9 +22,13 @@ public class CanvasNodeBuilder<T> {
 
     Canvas<T> canvas;
 
-    Point point;
+    Point2D point;
 
     Color nodeDefaultColor;
+
+    LineConnectionHelper lineConnectionHelper;
+
+    boolean allowIntersections;
 
     public CanvasNodeBuilder<T> withId(String id) {
         this.id = id;
@@ -45,7 +50,7 @@ public class CanvasNodeBuilder<T> {
         return this;
     }
 
-    public CanvasNodeBuilder<T> withPoint(Point point) {
+    public CanvasNodeBuilder<T> withPoint(Point2D point) {
         this.point = point;
         return this;
     }
@@ -59,6 +64,17 @@ public class CanvasNodeBuilder<T> {
         this.value = value;
         return this;
     }
+
+    public CanvasNodeBuilder<T> withLineConnectionHelper(LineConnectionHelper lineConnectionHelper){
+        this.lineConnectionHelper = lineConnectionHelper;
+        return this;
+    }
+
+    public CanvasNodeBuilder<T> withAllowIntersections(boolean allowIntersections){
+        this.allowIntersections = allowIntersections;
+        return this;
+    }
+
 
     public CanvasNode<T> build() {
         return new CanvasNode<>(this);

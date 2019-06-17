@@ -8,8 +8,6 @@ import javafx.util.Pair;
  */
 public interface RotateMatrixAlgObserver {
 
-    void rotationFinished();
-
     void change(Pair<Integer, Integer> n, String txt);
 
     boolean isStopped();

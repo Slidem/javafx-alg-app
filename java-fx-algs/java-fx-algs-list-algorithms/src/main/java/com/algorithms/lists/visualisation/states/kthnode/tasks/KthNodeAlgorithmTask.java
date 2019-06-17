@@ -1,20 +1,24 @@
 package com.algorithms.lists.visualisation.states.kthnode.tasks;
 
+import com.algorithms.graphics.toolbar.Toolbar;
 import com.algorithms.lists.logic.ReturnKthToLast;
 import com.algorithms.lists.logic.observers.KthToLastRecursiveNodeObserver;
 import com.algorithms.lists.node.Node;
+import com.algorithms.lists.visualisation.context.ListNodeAlgorithmContext;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.paint.Color;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.algorithms.lists.logic.ReturnKthToLast.getKthToLastRecursive;
-import static com.algorithms.lists.visualisation.states.kthnode.tasks.KthNodeAlgorithmTask.KthNodeVisitEventType.*;
 
 /**
  * @author Mihai Alexandru
  * @date 18.10.2018
  */
-public class KthNodeAlgorithmTask extends Task<KthNodeAlgorithmTask.KthNodeVisitEvent> implements KthToLastRecursiveNodeObserver<String> {
+public class KthNodeAlgorithmTask extends Task<Void> implements KthToLastRecursiveNodeObserver<String> {
 
     private Node<String> headNode;
 
@@ -22,38 +26,39 @@ public class KthNodeAlgorithmTask extends Task<KthNodeAlgorithmTask.KthNodeVisit
 
     private final AtomicBoolean stopped;
 
-    public KthNodeAlgorithmTask(Node<String> headNode, int kth) {
+    private Runnable algorithmFinishedAction;
+
+    private ListNodeAlgorithmContext listNodeAlgorithmContext;
+
+    public KthNodeAlgorithmTask(Node<String> headNode, int kth, Runnable algorithmFinishedAction, ListNodeAlgorithmContext listNodeAlgorithmContext) {
         this.headNode = headNode;
         this.kth = kth;
         this.stopped = new AtomicBoolean(false);
+        this.algorithmFinishedAction = algorithmFinishedAction;
+        this.listNodeAlgorithmContext = listNodeAlgorithmContext;
     }
 
     @Override
-    protected KthNodeAlgorithmTask.KthNodeVisitEvent call() throws Exception {
+    protected Void call() {
         getKthToLastRecursive(headNode, kth, this);
+        Platform.runLater(algorithmFinishedAction);
         return null;
     }
 
     @Override
     public void nodeVisited(ReturnKthToLast.Result<String> result) {
-        fireEvent(NODE_VISITED, result);
+        visitNode(result.getNode(), Color.BLUE);
     }
 
     @Override
     public void resultObtained(ReturnKthToLast.Result<String> result) {
-        fireEvent(RESULT_OBTAINED, result);
+        visitNode(result.getNode(), Color.RED);
     }
 
     @Override
     public void finalResultObtained(ReturnKthToLast.Result<String> finalResult) {
-        fireEvent(FINAL_RESULT_OBTAINED, finalResult);
-    }
-
-    private void fireEvent(KthNodeVisitEventType t, ReturnKthToLast.Result<String> r) {
-        if (this.stopped.get()) {
-            return;
-        }
-        updateValue(new KthNodeVisitEvent(t, r));
+        visitNode(finalResult.getNode(), Color.GREEN);
+        displayNodeFound(finalResult);
     }
 
     @Override
@@ -65,34 +70,33 @@ public class KthNodeAlgorithmTask extends Task<KthNodeAlgorithmTask.KthNodeVisit
         this.stopped.set(true);
     }
 
-    public enum KthNodeVisitEventType {
-
-        NODE_VISITED,
-
-        RESULT_OBTAINED,
-
-        FINAL_RESULT_OBTAINED;
-
+    private void visitNode(Node<String> node, Color color) {
+        sleepOneSecond();
+        if (isStopped() || Objects.isNull(node)) {
+            return;
+        }
+        listNodeAlgorithmContext.getCanvas().getNode(node.getId()).ifPresent(n -> Platform.runLater(() -> n.visit(color)));
     }
 
-    public static class KthNodeVisitEvent {
-
-        private KthNodeVisitEventType type;
-
-        private ReturnKthToLast.Result<String> result;
-
-        private KthNodeVisitEvent(KthNodeVisitEventType type, ReturnKthToLast.Result<String> result) {
-            this.type = type;
-            this.result = result;
+    private void displayNodeFound(ReturnKthToLast.Result<String> finalResult) {
+        if (isStopped()) {
+            return;
         }
 
-        public KthNodeVisitEventType getType() {
-            return type;
-        }
+        Platform.runLater(() -> {
+            Toolbar toolbar = listNodeAlgorithmContext.getToolbar();
+            toolbar.getInformationBar().changeToInfoIcon();
+            toolbar.getInformationBar().changeMessage("Kth node [" + finalResult.getK() + "] found!");
+        });
+    }
 
-        public ReturnKthToLast.Result<String> getResult() {
-            return result;
+    private void sleepOneSecond() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
+
 
 }

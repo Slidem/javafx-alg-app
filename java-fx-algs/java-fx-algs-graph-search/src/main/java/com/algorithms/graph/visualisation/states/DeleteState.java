@@ -15,6 +15,7 @@ public class DeleteState extends AbstractGraphState {
         context.getToolbar().getInformationBar().resetToDefault();
         context.getToolbar().enableAllControls();
         context.getCanvas().deleteNode(canvasNode);
+        canvasNode.getValue().removeFromAllNeighbours();
         context.changeState(new DefaultState());
     }
 }

@@ -6,17 +6,12 @@ import com.algorithms.graphics.toolbar.control.ToolbarControl;
 import com.algorithms.strings.visualisation.context.MatrixRotationContext;
 import com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes;
 import com.algorithms.strings.visualisation.state.task.GenerateMatrixTask;
-import com.algorithms.strings.visualisation.state.task.GenerateMatrixTask.MatrixTaskEvent;
-import com.algorithms.strings.visualisation.utils.MatrixIdComputer;
+import javafx.scene.control.Button;
+import jdk.jfr.ContentType;
 
 import static com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes.CLEAR_BUTTON;
 import static com.algorithms.strings.visualisation.objects.MatrixRotationControlTypes.ROTATE_MATRIX_BUTTON;
-import static com.algorithms.strings.visualisation.state.task.GenerateMatrixTask.MatrixTaskEventType.CHANGE;
-import static com.algorithms.strings.visualisation.state.task.GenerateMatrixTask.MatrixTaskEventType.ROTATION_FINISHED;
 import static com.algorithms.strings.visualisation.utils.MatrixControlUtils.*;
-import static java.util.Objects.isNull;
-import static javafx.scene.paint.Color.GOLD;
-import static javafx.scene.paint.Color.RED;
 
 /**
  * @author Mihai Alexandru
@@ -56,45 +51,18 @@ public class MatrixGeneratedState extends MatrixAbstractState {
     }
 
     private void executeRoatateMatrix(MatrixRotationContext context) {
-        GenerateMatrixTask task = new GenerateMatrixTask(matrixSize);
-        task.valueProperty().addListener((observableValue, matrixTaskEvent, newValue) -> processMatrixEvent(context, newValue, task));
-        context.changeState(new MatrixStopRotationState(() -> stopTask(context, task)));
-    }
-
-    private void processMatrixEvent(MatrixRotationContext context, MatrixTaskEvent event, GenerateMatrixTask task) {
-        if (isNull(event)) {
-            return;
-        }
-
-        if (CHANGE == event.getType()) {
-            processMatrixChangeEvent(event, context);
-        } else if (ROTATION_FINISHED == event.getType()) {
-            processMatrixFinishedEvent(context, task);
-        }
-    }
-
-    private void processMatrixFinishedEvent(MatrixRotationContext context, GenerateMatrixTask task) {
-        context.getToolbar().getInformationBar().changeMessage("Rotation finished");
-
-        stopTask(context, task);
-
-        context.changeState(new GenerateMatrixState());
-    }
-
-    private void processMatrixChangeEvent(MatrixTaskEvent event, MatrixRotationContext context) {
-        String nodeId = MatrixIdComputer.create(event.getNodeRowCol());
-
-        var canvasNode = context.getCanvas().getNode(nodeId);
-
-        canvasNode.ifPresent(n -> n.visit(RED));
-
-        pauseThread();
-
-        canvasNode.ifPresent(n -> n.changeNodeText(event.getTxt()));
-
-        pauseThread();
-
-        canvasNode.ifPresent(n -> n.visit(GOLD));
+        GenerateMatrixTask task = new GenerateMatrixTask(matrixSize, context, ()-> stopSearch(context));
+        context.changeState(new MatrixStopRotationState(() -> {
+            stopTask(task);
+            stopSearch(context);
+        }));
+        Toolbar toolbar = context.getToolbar();
+        InformationBar informationBar = toolbar.getInformationBar();
+        disableRotate(toolbar, true);
+        informationBar.changeToInfoIcon();
+        informationBar.changeMessage("Rotating matrix...");
+        changeClearToStop(toolbar);
+        new Thread(task).start();
     }
 
 
@@ -102,10 +70,14 @@ public class MatrixGeneratedState extends MatrixAbstractState {
         return type.name().equals(toolbarControl.getType());
     }
 
-    private void stopTask(MatrixRotationContext context, GenerateMatrixTask task) {
+    private void stopSearch(MatrixRotationContext context) {
         InformationBar informationBar = context.getToolbar().getInformationBar();
         informationBar.changeToInfoIcon();
         informationBar.changeMessage("Rotation finished.");
+        context.changeState(this);
+    }
+
+    private void stopTask(GenerateMatrixTask task) {
         task.stop();
         task.cancel();
     }

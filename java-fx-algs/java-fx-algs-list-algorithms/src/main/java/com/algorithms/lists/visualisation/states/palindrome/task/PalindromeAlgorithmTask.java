@@ -2,58 +2,87 @@ package com.algorithms.lists.visualisation.states.palindrome.task;
 
 import com.algorithms.lists.logic.observers.PalindromeNodeObserver;
 import com.algorithms.lists.node.Node;
+import com.algorithms.lists.visualisation.context.ListNodeAlgorithmContext;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.paint.Color;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.algorithms.lists.logic.Palindrome.isPalindromeIterative;
-import static com.algorithms.lists.visualisation.states.palindrome.task.PalindromeAlgorithmTask.PalindromeVisitEventType.*;
+import static javafx.scene.paint.Color.*;
 
 /**
  * @author Mihai Alexandru
  * @date 20.10.2018
  */
-public class PalindromeAlgorithmTask extends Task<PalindromeAlgorithmTask.PalindromeVisitEvent> implements PalindromeNodeObserver<String> {
+public class PalindromeAlgorithmTask extends Task<Void> implements PalindromeNodeObserver<String> {
 
     private final Node<String> headNode;
 
     private final AtomicBoolean stopped;
 
-    public PalindromeAlgorithmTask(Node<String> headNode) {
+    private ListNodeAlgorithmContext context;
+
+    private Runnable algorithmFinishedAction;
+
+    public PalindromeAlgorithmTask(Node<String> headNode, ListNodeAlgorithmContext context, Runnable algorithmFinishedAction) {
+        this.algorithmFinishedAction = algorithmFinishedAction;
+        this.context = context;
         this.headNode = headNode;
         this.stopped = new AtomicBoolean(false);
     }
 
     @Override
-    protected PalindromeVisitEvent call() throws Exception {
+    protected Void call() {
         isPalindromeIterative(headNode, this);
+        Platform.runLater(algorithmFinishedAction);
         return null;
     }
 
 
     @Override
     public void runnerVisited(Node<String> runner) {
-        fireEvent(new PalindromeVisitEvent(RUNNER_VISITED, runner, null));
+        visitNode(runner, TURQUOISE);
     }
 
     @Override
     public void nodeVisited(Node<String> n) {
-        fireEvent(new PalindromeVisitEvent(NODE_VISITED, n, null));
+        visitNode(n, DEEPSKYBLUE);
     }
 
     @Override
     public void nodeAddedToStack(Node<String> n) {
-        fireEvent(new PalindromeVisitEvent(NODE_ADDED_TO_STACK, n, null));
+        visitNode(n, GREY);
     }
 
     @Override
-    public void compareCharactersResult(Node<String> a, Node<String> b, boolean result) {
-        fireEvent(new PalindromeVisitEvent(NODE_ADDED_TO_STACK, null, new CompareCharacterResult(a, b, result)));
+    public void compareCharactersResult(Node<String> a, Node<String> b, boolean nodesAreEqual) {
+        visitNodeNoSleep(a, Color.BLUE);
+        visitNodeNoSleep(b, Color.BLUE);
+
+        Color comparisonColor = nodesAreEqual ? GREEN : RED;
+
+        sleepForOneSecond();
+
+        visitNodeNoSleep(a, comparisonColor);
+        visitNodeNoSleep(b, comparisonColor);
+
+        if (!nodesAreEqual) {
+            Platform.runLater(() -> {
+                context.getToolbar().getInformationBar().changeMessage("List is NOT a valid palindrome");
+                context.getToolbar().getInformationBar().changeToAttentionIcon();
+            });
+        }
     }
 
     @Override
     public void isPalindrome() {
-        fireEvent(new PalindromeVisitEvent(VALID_PALINDROME, null, null));
+        Platform.runLater(() -> {
+            context.getToolbar().getInformationBar().changeToInfoIcon();
+            context.getToolbar().getInformationBar().changeMessage("List is a palindrome");
+        });
     }
 
     @Override
@@ -65,72 +94,27 @@ public class PalindromeAlgorithmTask extends Task<PalindromeAlgorithmTask.Palind
         this.stopped.set(true);
     }
 
-    private void fireEvent(PalindromeVisitEvent palindromeVisitEvent) {
-        if (this.stopped.get()) {
+    private void visitNode(Node<String> node, Color color) {
+        if (this.stopped.get() || Objects.isNull(node)) {
             return;
         }
-        updateValue(palindromeVisitEvent);
+        sleepForOneSecond();
+        context.getCanvas().getNode(node.getId()).ifPresent(cn -> Platform.runLater(() -> cn.visit(color)));
     }
 
-    public static class PalindromeVisitEvent {
-
-        private PalindromeVisitEventType type;
-
-        private Node<String> node;
-
-        private CompareCharacterResult compareCharacterResult;
-
-        public PalindromeVisitEvent(PalindromeVisitEventType type, Node<String> node, CompareCharacterResult compareCharacterResult) {
-            this.type = type;
-            this.node = node;
-            this.compareCharacterResult = compareCharacterResult;
+    private void visitNodeNoSleep(Node<String> node, Color color){
+        if (this.stopped.get() || Objects.isNull(node)) {
+            return;
         }
+        context.getCanvas().getNode(node.getId()).ifPresent(cn -> Platform.runLater(() -> cn.visit(color)));
+    }
 
-        public PalindromeVisitEventType getType() {
-            return type;
-        }
-
-        public Node<String> getNode() {
-            return node;
-        }
-
-        public CompareCharacterResult getCompareCharacterResult() {
-            return compareCharacterResult;
+    private void sleepForOneSecond() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
-    public static class CompareCharacterResult {
-
-        private Node<String> nodeA;
-
-        private Node<String> nodeB;
-
-        private boolean areEqual;
-
-        public CompareCharacterResult(Node<String> nodeA, Node<String> nodeB, boolean areEqual) {
-            this.nodeA = nodeA;
-            this.nodeB = nodeB;
-            this.areEqual = areEqual;
-        }
-
-        public Node<String> getNodeA() {
-            return nodeA;
-        }
-
-        public Node<String> getNodeB() {
-            return nodeB;
-        }
-
-        public boolean nodesEqual() {
-            return areEqual;
-        }
-    }
-
-    public enum PalindromeVisitEventType {
-        RUNNER_VISITED,
-        NODE_VISITED,
-        NODE_ADDED_TO_STACK,
-        COMPARE_CHARACTER_RESULT,
-        VALID_PALINDROME;
-    }
 }

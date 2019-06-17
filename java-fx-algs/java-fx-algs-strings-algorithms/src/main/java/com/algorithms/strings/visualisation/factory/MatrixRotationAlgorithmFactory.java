@@ -10,6 +10,7 @@ import com.algorithms.graphics.toolbar.ToolbarControlCustomizer;
 import com.algorithms.graphics.toolbar.control.ToolbarControl;
 import com.algorithms.strings.visualisation.context.MatrixRotationContext;
 import com.algorithms.strings.visualisation.objects.RowColumnHolder;
+import com.algorithms.strings.visualisation.state.GenerateMatrixState;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -44,7 +45,7 @@ public class MatrixRotationAlgorithmFactory {
                 .setToolbar(toolbar)
                 .setCanvas(canvas)
                 .setContext(context)
-                .setInitialState(null)
+                .setInitialState(new GenerateMatrixState())
                 .build();
     }
 

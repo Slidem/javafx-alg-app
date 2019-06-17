@@ -47,7 +47,7 @@ public class StartSearchState extends AbstractGraphState {
     }
 
     private Task<Node<String>> createSearchTask(GraphSearch<String> graphSearch) {
-        return new Task<Node<String>>() {
+        return new Task<>() {
             @Override
             protected Node<String> call() throws Exception {
                 NodeVisitObserver<String> nodeVisitObserver = n -> {

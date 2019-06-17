@@ -13,11 +13,6 @@
     <dependencies>
         <dependency>
             <groupId>com.algorithms</groupId>
-            <artifactId>java-fx-algs-toolbar</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.algorithms</groupId>
             <artifactId>java-fx-algs-commons</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -6,6 +6,7 @@ import com.algorithms.graphics.toolbar.control.ToolbarControl;
 import com.algorithms.lists.node.Node;
 import com.algorithms.lists.visualisation.context.ListNodeAlgorithmContext;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.Point2D;
 
 /**
  * @author Mihai Alexandru
@@ -19,7 +20,7 @@ public abstract class ListAbstractState implements AlgorithmState<Node<String>, 
     }
 
     @Override
-    public final void canvasClicked(Point point, ListNodeAlgorithmContext context) {
+    public final void canvasClicked(Point2D point, ListNodeAlgorithmContext context) {
         //do nothing -> ALWAYS
     }
 

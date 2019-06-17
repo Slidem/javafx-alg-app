@@ -10,9 +10,12 @@ public class RowColumnHolder {
 
     private int column;
 
-    public RowColumnHolder(int row, int column) {
+    private int matrixSize;
+
+    public RowColumnHolder(int row, int column, int matrixSize) {
         this.row = row;
         this.column = column;
+        this.matrixSize = matrixSize;
     }
 
     public int getRow() {
@@ -21,5 +24,9 @@ public class RowColumnHolder {
 
     public int getColumn() {
         return column;
+    }
+
+    public int getMatrixSize() {
+        return matrixSize;
     }
 }

@@ -1,6 +1,7 @@
 package com.algorithms.graph.visualisation.factory;
 
 import ami.lightdi.annotations.Component;
+import ami.lightdi.annotations.Inject;
 import com.algorithms.graph.logic.GraphSearch;
 import com.algorithms.graph.logic.Node;
 import com.algorithms.graph.visualisation.context.GraphSearchAlgorithmContext;
@@ -27,6 +28,13 @@ import java.util.function.BiFunction;
 @Component
 public class GraphSearchAlgorithmFactory {
 
+    private GraphNodeFactory graphNodeFactory;
+
+    @Inject
+    public GraphSearchAlgorithmFactory(GraphNodeFactory graphNodeFactory) {
+        this.graphNodeFactory = graphNodeFactory;
+    }
+
     public AlgorithmVisualisationNode<Node<String>, GraphSearchAlgorithmContext> create(BiFunction<Node<String>, Node<String>, GraphSearch<String>> graphSearchSupplier) {
         Toolbar toolbar = new ToolbarBuilder()
                 .withControls(getControls())
@@ -34,7 +42,6 @@ public class GraphSearchAlgorithmFactory {
                 .withInitialInfoText("Create nodes to form a graph.")
                 .build();
         Canvas<Node<String>> canvas = new Canvas<>();
-        GraphNodeFactory graphNodeFactory = new GraphNodeFactory();
         GraphSearchAlgorithmContext context = new GraphSearchAlgorithmContext.Builder()
                 .withCanvas(canvas)
                 .withToolbar(toolbar)

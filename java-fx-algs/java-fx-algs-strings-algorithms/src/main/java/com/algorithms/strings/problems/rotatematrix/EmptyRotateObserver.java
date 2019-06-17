@@ -8,10 +8,6 @@ import javafx.util.Pair;
  */
 public class EmptyRotateObserver implements RotateMatrixAlgObserver {
     
-    @Override
-    public void rotationFinished() {
-
-    }
 
     @Override
     public void change(Pair<Integer, Integer> n, String txt) {

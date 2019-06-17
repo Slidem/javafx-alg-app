@@ -6,6 +6,7 @@ import com.algorithms.graphics.canvas.observers.CanvasObserver;
 import com.algorithms.graphics.constants.GraphicsConstants;
 import com.algorithms.utils.geometry.Point;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
@@ -38,7 +39,7 @@ public class Canvas<T> extends Pane {
         setupCanvas();
     }
 
-    public void drawNode(Point point, CanvasNodeFactory<T> canvasNodeFactory) {
+    public void drawNode(Point2D point, CanvasNodeFactory<T> canvasNodeFactory) {
         var canvasNode = canvasNodeFactory.createNode(this, point);
         boolean drawn = canvasNode.draw();
         if (drawn) {
@@ -83,29 +84,23 @@ public class Canvas<T> extends Pane {
 
     private EventHandler<MouseEvent> getCanvasClickEventHandler() {
         return event -> {
-            Object source = event.getSource();
-            Point point = new Point(event.getX(), event.getY());
-            if (source instanceof Shape) {
-                nodeClicked(point);
-            } else {
-                canvasClicked(point);
-            }
+            Point2D point = new Point2D(event.getX(), event.getY());
+            nodeClicked(point).ifPresentOrElse(this::nodeClicked, ()->canvasClicked(point));
         };
     }
 
-    private void nodeClicked(Point point) {
-        canvasNodes.values()
+    private Optional<CanvasNode<T>> nodeClicked(Point2D point) {
+        return canvasNodes.values()
                 .stream()
-                .filter(canvasNode -> canvasNode.getPoint().equals(point))
-                .findFirst()
-                .ifPresent(this::nodeClicked);
+                .filter(canvasNode -> canvasNode.contains(point))
+                .findFirst();
     }
 
     private void nodeClicked(CanvasNode<T> node) {
         ofNullable(canvasObserver).ifPresent(o -> o.nodeClicked(node));
     }
 
-    private void canvasClicked(Point point) {
+    private void canvasClicked(Point2D point) {
         ofNullable(canvasObserver).ifPresent(o -> o.canvasClicked(point));
     }
 

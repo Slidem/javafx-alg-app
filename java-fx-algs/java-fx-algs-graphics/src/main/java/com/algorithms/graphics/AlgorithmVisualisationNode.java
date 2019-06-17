@@ -6,6 +6,7 @@ import com.algorithms.graphics.constants.GraphicsConstants;
 import com.algorithms.graphics.toolbar.control.ToolbarControl;
 import com.algorithms.graphics.toolbar.observers.ToolbarObserver;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.Point2D;
 import javafx.scene.layout.VBox;
 
 /**
@@ -34,7 +35,7 @@ public class AlgorithmVisualisationNode<T, C extends AlgorithmVisualisationConte
     }
 
     @Override
-    public void canvasClicked(Point point) {
+    public void canvasClicked(Point2D point) {
         algorithmState.canvasClicked(point, context);
     }
 

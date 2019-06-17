@@ -5,6 +5,7 @@ import com.algorithms.lists.node.Node;
 import com.algorithms.lists.visualisation.exceptions.InvalidListSizeException;
 import com.algorithms.lists.visualisation.objects.Constants;
 import com.algorithms.utils.geometry.Point;
+import javafx.geometry.Point2D;
 
 import java.util.UUID;
 
@@ -49,13 +50,13 @@ public class ListFactory {
      */
     public void drawList(Node<String> headNode) {
         requireNonNull(headNode, "Cannot draw a null list of nodes");
-        Point p = calculateStartPoint(headNode, canvas);
+        Point2D p = calculateStartPoint(headNode, canvas);
         Node<String> n = headNode;
         canvas.getAllNodes().forEach(canvas::deleteNode);
         while (n != null) {
-            canvas.drawNode(p, ListNodeFactory.of(n));
+            canvas.drawNode(p, new ListNodeFactory(n));
             n = n.getNext();
-            p = new Point(p.getX() + DEFAULT_SQUARE_SIDE + NODE_SPACING, p.getY());
+            p = new Point2D(p.getX() + DEFAULT_SQUARE_SIDE + NODE_SPACING, p.getY());
         }
     }
 
@@ -92,7 +93,7 @@ public class ListFactory {
         return head;
     }
 
-    private Point calculateStartPoint(Node<String> head, Canvas<Node<String>> canvas) {
+    private Point2D calculateStartPoint(Node<String> head, Canvas<Node<String>> canvas) {
 
         int listLength = getListLength(head);
 
@@ -102,7 +103,7 @@ public class ListFactory {
         double startY = canvasHeight / 2;
         double startX = (canvasWidth - DEFAULT_SQUARE_SIDE * listLength - Constants.Node.NODE_SPACING * (listLength - 1)) / 2 + DEFAULT_SQUARE_SIDE / 2;
 
-        return new Point(startX, startY);
+        return new Point2D(startX, startY);
     }
 
     private <T> int getListLength(Node<T> headNode) {

@@ -7,10 +7,7 @@ import com.algorithms.graphics.toolbar.observers.ToolbarObserver;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BinaryOperator;
 
 /**
@@ -103,15 +100,9 @@ public class Toolbar extends VBox {
     }
 
     private ToolbarControl[] sortedControlsByOrder(Collection<ToolbarControl> controls) {
-        ToolbarControl[] controlsArray = controls.toArray(new ToolbarControl[controls.size()]);
-        Arrays.sort(controlsArray, (a, b) -> a.getOrder() - b.getOrder());
+        ToolbarControl[] controlsArray = controls.toArray(new ToolbarControl[0]);
+        Arrays.sort(controlsArray, Comparator.comparingInt(ToolbarControl::getOrder));
         return controlsArray;
-    }
-
-    private static <T> BinaryOperator<T> throwingMerger() {
-        return (u, v) -> {
-            throw new IllegalStateException(String.format("Duplicate key %s", u));
-        };
     }
 
 }
